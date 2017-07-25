@@ -40,7 +40,7 @@ namespace WinDrag
 
                 if (is_moving || (w != IntPtr.Zero))
                 {
-                    if ((GetAsyncKeyState((UInt32)Keys.Menu) == -32768) && (GetAsyncKeyState(VK_LBUTTON) == -32767))
+                    if (!is_mouse_pressed && (GetAsyncKeyState((UInt32)Keys.Menu) == -32768) && (GetAsyncKeyState(VK_LBUTTON) == -32768))
                     {
                         is_mouse_pressed = true;
                         is_moving = true;
@@ -55,20 +55,17 @@ namespace WinDrag
 
                         SetWindowLong(cw, GWL_EXSTYLE, WS_EX_LAYERED);
                         SetLayeredWindowAttributes(cw, 0, 200, LWA_ALPHA);
-
-                        SetCapture(cw);
                     }
 
-                    if ((GetAsyncKeyState(VK_LBUTTON) != -32767) && (GetAsyncKeyState(VK_LBUTTON) != -32768))
+                    if ((GetAsyncKeyState(VK_LBUTTON) != -32768) || GetAsyncKeyState((UInt32)Keys.Menu) != -32768)
                     {
                         is_mouse_pressed = false;
                         is_moving = false;
 
                         SetLayeredWindowAttributes(cw, 0, 255, LWA_ALPHA);
-                        ReleaseCapture();
                     }
                             
-                    if ((GetAsyncKeyState((UInt32)Keys.Menu) == -32768) && (GetAsyncKeyState(VK_LBUTTON) == -32768))
+                    if (is_mouse_pressed && (GetAsyncKeyState((UInt32)Keys.Menu) == -32768) && (GetAsyncKeyState(VK_LBUTTON) == -32768))
                     {
                         wx = Cursor.Position.X - rx;
                         wy = Cursor.Position.Y - ry;
@@ -82,7 +79,6 @@ namespace WinDrag
                     is_moving = false;
 
                     SetLayeredWindowAttributes(cw, 0, 255, LWA_ALPHA);
-                    ReleaseCapture();
                 }
             }
         }
@@ -109,10 +105,6 @@ namespace WinDrag
         static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool IsWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
         private static extern IntPtr GetWindow(IntPtr hWnd, int uCmd);
         private const int GW_HWNDPREV = 3;
 
@@ -123,13 +115,6 @@ namespace WinDrag
         [DllImport("user32.dll")]
         static extern short GetAsyncKeyState(UInt32 vKey);
         private const UInt32 VK_LBUTTON = 0x01;
-
-        [DllImport("user32.dll")]
-        static extern IntPtr SetCapture(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool ReleaseCapture();
 
         [DllImport("user32.dll")]
         static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
