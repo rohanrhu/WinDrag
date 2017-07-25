@@ -16,7 +16,6 @@ using System.Windows.Forms;
 
 namespace WinDrag
 {
-
     class Program
     {
         static void Main(string[] args)
@@ -40,7 +39,7 @@ namespace WinDrag
 
                 if (is_moving || (w != IntPtr.Zero))
                 {
-                    if (!is_mouse_pressed && (GetAsyncKeyState((UInt32)Keys.Menu) == -32768) && (GetAsyncKeyState(VK_LBUTTON) == -32768))
+                    if (!is_mouse_pressed && IsWindow(w) && IsWindowVisible(w) && (GetAsyncKeyState((UInt32)Keys.Menu) == -32768) && (GetAsyncKeyState(VK_LBUTTON) == -32768))
                     {
                         is_mouse_pressed = true;
                         is_moving = true;
@@ -85,6 +84,14 @@ namespace WinDrag
 
         [DllImport("user32.dll")]
         private static extern IntPtr WindowFromPoint(Point loc);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool IsWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool IsWindowVisible(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
