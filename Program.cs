@@ -12,6 +12,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace WinDrag
@@ -79,6 +80,8 @@ namespace WinDrag
 
                     SetLayeredWindowAttributes(cw, 0, 255, LWA_ALPHA);
                 }
+
+                Thread.Sleep(16); // Moving with 60 FPS :)
             }
         }
 
